@@ -7,6 +7,7 @@ from collections import defaultdict
 from multiprocessing import Pool, cpu_count
 from itertools import groupby
 from operator import itemgetter
+from tqdm import tqdm
 
 # Step 1: Define directory for storing the dataset
 DATA_DIR = "data/lerobot/"
@@ -29,8 +30,8 @@ print(f"Original dataset saved to {original_dataset_path}")
 tasks = defaultdict(list)
 
 # Group indices by language instruction more efficiently
-all_instructions = [data_point["language_instruction"] for data_point in dataset]
-for idx, instruction in enumerate(all_instructions):
+all_instructions = [data_point["language_instruction"] for data_point in tqdm(dataset, desc="Grouping instructions")]
+for idx, instruction in enumerate(tqdm(all_instructions, desc="Assigning indices to instructions")):
     tasks[instruction].append(idx)
 
 
@@ -69,13 +70,13 @@ def process_and_save_split(args):
 # Use multiprocessing to process and save datasets in parallel
 num_processes = min(8, cpu_count())
 with Pool(processes=num_processes) as pool:
-    pool.map(process_and_save_split, tasks.items())
+    list(tqdm(pool.imap(process_and_save_split, tasks.items()), total=len(tasks), desc="Saving split datasets"))
 
 
 # Step 4: Verification script to check if all split datasets sum to the original dataset
 def validate_split(original_dataset, split_datasets_dir):
     total_length = 0
-    for file_name in os.listdir(split_datasets_dir):
+    for file_name in tqdm(os.listdir(split_datasets_dir), desc="Validating split datasets"):
         if file_name.startswith("split_dataset_") and file_name.endswith(".pkl"):
             with open(os.path.join(split_datasets_dir, file_name), 'rb') as f:
                 split_dataset = pickle.load(f)
