@@ -9,8 +9,6 @@ from itertools import groupby
 from operator import itemgetter
 from tqdm import tqdm
 
-PROCESS_NUM = 16
-
 # Step 1: Define directory for storing the dataset
 DATA_DIR = "data/lerobot/"
 if not os.path.exists(DATA_DIR):
@@ -32,10 +30,11 @@ print(f"Original dataset saved to {original_dataset_path}")
 tasks = defaultdict(list)
 
 # Group indices by language instruction more efficiently using multiprocessing
-process_num = min(PROCESS_NUM, cpu_count())
+process_num = min(8, cpu_count())
 
 
-def group_indices(start_idx, end_idx):
+def group_indices(args):
+    start_idx, end_idx = args
     local_tasks = defaultdict(list)
     for idx in range(start_idx, end_idx):
         data_point = dataset[idx]
@@ -49,8 +48,8 @@ chunk_size = len(dataset) // process_num
 chunks = [(i * chunk_size, (i + 1) * chunk_size if i != process_num - 1 else len(dataset)) for i in range(process_num)]
 
 with Pool(processes=process_num) as pool:
-    results = list(tqdm(pool.imap(group_indices, [chunk for chunk in chunks]), total=len(chunks),
-                        desc="Grouping instructions with multiprocessing"))
+    results = list(
+        tqdm(pool.imap(group_indices, chunks), total=len(chunks), desc="Grouping instructions with multiprocessing"))
 
 
 # Merge results from all processes using multiprocessing
@@ -104,7 +103,7 @@ def process_and_save_split(args):
 
 
 # Use multiprocessing to process and save datasets in parallel
-num_processes = min(PROCESS_NUM, cpu_count())
+num_processes = min(8, cpu_count())
 with Pool(processes=num_processes) as pool:
     list(tqdm(pool.imap(process_and_save_split, tasks.items()), total=len(tasks), desc="Saving split datasets"))
 
