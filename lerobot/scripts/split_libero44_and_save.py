@@ -9,7 +9,7 @@ from itertools import groupby
 from operator import itemgetter
 from tqdm import tqdm
 
-NUM_PROCESS = 32
+NUM_PROCESS = 64
 
 # Step 1: Define directory for storing the dataset
 DATA_DIR = "data/lerobot/"
