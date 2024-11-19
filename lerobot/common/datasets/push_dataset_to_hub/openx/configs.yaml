@@ -641,10 +641,32 @@ OPENX_DATASET_CONFIGS:
   libero44_dataset_converted_externally_to_rlds:
     image_obs_keys:
       - image
-      - wrist_image
+#      - wrist_image
     depth_obs_keys:
       - null
     state_obs_keys:
       - state
-      - joint_state
+#      - joint_state
+    fps: 30
+
+  libero44_KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet:
+    image_obs_keys:
+      - image
+#      - wrist_image
+    depth_obs_keys:
+      - null
+    state_obs_keys:
+      - state
+#      - joint_state
+    fps: 30
+
+  libero44_KITCHEN_SCENE1_put_the_black_bowl_on_the_plate:
+    image_obs_keys:
+      - image
+#      - wrist_image
+    depth_obs_keys:
+      - null
+    state_obs_keys:
+      - state
+#      - joint_state
     fps: 30

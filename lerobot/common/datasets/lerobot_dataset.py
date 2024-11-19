@@ -83,6 +83,7 @@ class LeRobotDataset(torch.utils.data.Dataset):
         """
         return self.info.get("video", False)
 
+    # yy: features shall be related to ds keys to use (may need to check this filter out the useless part)
     @property
     def features(self) -> datasets.Features:
         return self.hf_dataset.features
