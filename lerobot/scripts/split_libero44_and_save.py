@@ -9,7 +9,7 @@ from itertools import groupby
 from operator import itemgetter
 from tqdm import tqdm
 
-NUM_PROCESS = 16
+NUM_PROCESS = 32
 
 # Step 1: Define directory for storing the dataset
 DATA_DIR = "data/lerobot/"
@@ -33,6 +33,7 @@ tasks = defaultdict(list)
 
 # Group indices by language instruction more efficiently using multiprocessing
 process_num = min(NUM_PROCESS, cpu_count())
+print(f">> NUM of CPU: {cpu_count()}")
 
 
 def group_indices(args):
