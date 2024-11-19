@@ -637,3 +637,14 @@ OPENX_DATASET_CONFIGS:
     state_obs_keys:
       - state
     fps: 30
+
+  libero44_dataset_converted_externally_to_rlds:
+    image_obs_keys:
+      - image
+      - wrist_image
+    depth_obs_keys:
+      - null
+    state_obs_keys:
+      - state
+      - joint_state
+    fps: 30

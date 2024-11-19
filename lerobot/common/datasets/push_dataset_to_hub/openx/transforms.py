@@ -784,6 +784,7 @@ def robo_set_dataset_transform(trajectory: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def identity_transform(trajectory: Dict[str, Any]) -> Dict[str, Any]:
+    a = 1
     return trajectory
 
 
@@ -856,4 +857,5 @@ OPENX_STANDARDIZATION_TRANSFORMS = {
     "conq_hose_manipulation": identity_transform,
     "io_ai_tech": identity_transform,
     "spoc": identity_transform,
+    "libero44_dataset_converted_externally_to_rlds": identity_transform,
 }

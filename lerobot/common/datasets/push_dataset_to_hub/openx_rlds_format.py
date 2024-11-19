@@ -244,7 +244,8 @@ def load_from_raw(
             imgs_array = np.array(imgs_array)
             if video:
                 # save png images in temporary directory
-                tmp_imgs_dir = videos_dir / "tmp_images"
+                tmp_imgs_dir = (videos_dir / "tmp_images")
+                tmp_imgs_dir.mkdir(parents=True, exist_ok=True)
                 save_images_concurrently(imgs_array, tmp_imgs_dir)
 
                 # encode images to a mp4 video
