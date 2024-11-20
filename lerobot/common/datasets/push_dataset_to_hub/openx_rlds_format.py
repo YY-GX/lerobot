@@ -177,6 +177,8 @@ def load_from_raw(
         # convert episodes index to sorted list
         episodes = sorted(episodes)
 
+
+    print(">> Start tqdm")
     for ep_idx in tqdm.tqdm(range(starting_ep_idx, ds_length)):
         episode = next(it)
 

@@ -220,6 +220,7 @@ def push_dataset_to_hub(
         fmt_kwgs["openx_dataset_name"] = openx_dataset_name
 
     hf_dataset, episode_data_index, info = from_raw_to_lerobot_format(**fmt_kwgs)
+    exit(0)
 
     lerobot_dataset = LeRobotDataset.from_preloaded(
         repo_id=repo_id,
