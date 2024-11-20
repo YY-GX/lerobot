@@ -324,7 +324,8 @@ def train(cfg: DictConfig, out_dir: str | None = None, job_name: str | None = No
     if cfg.training.eval_freq > 0:
         logging.info("make_env")
         if "libero" in cfg.dataset_repo_id:
-            eval_env = make_libero_env(cfg, task_suite_name=cfg.libero.task_suite_name, task_id=cfg.libero.task_id, resolution=cfg.libero.resolution)
+            pass
+            # eval_env = make_libero_env(cfg, task_suite_name=cfg.libero.task_suite_name, task_id=cfg.libero.task_id, resolution=cfg.libero.resolution)
         else:
             eval_env = make_env(cfg)
 
