@@ -670,3 +670,14 @@ OPENX_DATASET_CONFIGS:
       - state
 #      - joint_state
     fps: 30
+
+  libero44_KITCHEN_SCENE1_put_the_black_bowl_on_the_plate:
+    image_obs_keys:
+      - image
+    #      - wrist_image
+    depth_obs_keys:
+      - null
+    state_obs_keys:
+      - state
+    #      - joint_state
+    fps: 30

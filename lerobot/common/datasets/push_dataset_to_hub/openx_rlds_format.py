@@ -240,7 +240,6 @@ def load_from_raw(
         ###########################################################
 
         # loop through all cameras
-        print(f">> video {video}")
         for im_key in image_keys:
             img_key = f"observation.images.{im_key}"
             imgs_array = image_array_dict[im_key]
@@ -254,7 +253,6 @@ def load_from_raw(
                 # encode images to a mp4 video
                 fname = f"{img_key}_episode_{ep_idx:06d}.mp4"
                 video_path = videos_dir / fname
-                print(f">> video_path {video_path}")
                 encode_video_frames(tmp_imgs_dir, video_path, fps, **(encoding or {}))
 
                 # clean temporary images directory
