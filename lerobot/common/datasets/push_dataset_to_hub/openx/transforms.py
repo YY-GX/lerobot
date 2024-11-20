@@ -784,6 +784,8 @@ def robo_set_dataset_transform(trajectory: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def libero_dataset_transform(trajectory: Dict[str, Any]) -> Dict[str, Any]:
+    print(trajectory.keys())
+
     # Tackle state
     # Extract the two elements (each of length 8)
     element_1 = trajectory["observation"]["state"][0]  # Shape: (8,)
