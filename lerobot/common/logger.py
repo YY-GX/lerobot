@@ -119,7 +119,8 @@ class Logger:
                 entity=entity,
                 name=wandb_job_name,
                 notes=cfg.get("wandb", {}).get("notes"),
-                tags=cfg_to_group(cfg, return_list=True),
+                # tags=cfg_to_group(cfg, return_list=True),
+                tags=cfg_to_group(cfg, return_list=False)[:64],
                 dir=log_dir,
                 config=OmegaConf.to_container(cfg, resolve=True),
                 # TODO(rcadene): try set to True
