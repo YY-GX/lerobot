@@ -224,6 +224,7 @@ def load_from_raw(
         else:
             states = tf_to_torch(episode["observation"]["state"])
 
+        print(states.size())
         actions = tf_to_torch(episode["action"])
         rewards = tf_to_torch(episode["reward"]).float()
 
