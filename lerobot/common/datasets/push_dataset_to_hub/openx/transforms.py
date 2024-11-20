@@ -793,7 +793,7 @@ def libero_dataset_transform(trajectory: Dict[str, Any]) -> Dict[str, Any]:
     element_2 = trajectory["observation"]["state"][1]  # Shape: (8,)
 
     # Concatenate them along axis 0 to create a single tensor of length 16
-    trajectory["observation"]["state"] = tf.concat([element_1, element_2], axis=0)
+    trajectory["observation"]["state"] = tf.concat([element_1, element_2], axis=0)[None, ...]
     print(trajectory["observation"]["state"].shape)
 
     # # Tackle images
