@@ -220,7 +220,6 @@ def push_dataset_to_hub(
         fmt_kwgs["openx_dataset_name"] = openx_dataset_name
 
     hf_dataset, episode_data_index, info = from_raw_to_lerobot_format(**fmt_kwgs)
-    exit(0)
 
     lerobot_dataset = LeRobotDataset.from_preloaded(
         repo_id=repo_id,
@@ -271,6 +270,7 @@ def push_dataset_to_hub(
         # clear cache
         shutil.rmtree(meta_data_dir)
         shutil.rmtree(videos_dir)
+        shutil.rmtree(videos_dir.parent.joinpath("ep_dicts"))
 
     return lerobot_dataset
 
@@ -328,7 +328,7 @@ def main():
     parser.add_argument(
         "--num-workers",
         type=int,
-        default=1,
+        default=8,
         help="Number of processes of Dataloader for computing the dataset statistics.",
     )
     parser.add_argument(
