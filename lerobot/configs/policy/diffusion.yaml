@@ -65,8 +65,8 @@ policy:
   input_shapes:
     # TODO(rcadene, alexander-soare): add variables for height and width from the dataset/env?
     # observation.image: [3, 96, 96]
-    observation.images.image: [3, ${libero.resolution}, ${libero.resolution}]
-    observation.state: ["${env.state_dim}"]
+    observation.images.image: [3, "${libero.resolution}", "${libero.resolution}"]
+    observation.state: ["${libero.state_dim}"]
   output_shapes:
     action: ["${env.action_dim}"]
 
@@ -114,3 +114,4 @@ libero:
   task_suite_name: 'libero_90'
   task_id: 4
   resolution: 256
+  state_dim: 8
