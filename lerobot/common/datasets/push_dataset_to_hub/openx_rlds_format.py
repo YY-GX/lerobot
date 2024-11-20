@@ -157,7 +157,6 @@ def load_from_raw(
     ep_dicts = []
     # Init temp path to save ep_dicts in case of crash
     tmp_ep_dicts_dir = videos_dir.parent.joinpath("ep_dicts")
-    print(f">> tmp_ep_dicts_dir: {tmp_ep_dicts_dir}")
     tmp_ep_dicts_dir.mkdir(parents=True, exist_ok=True)
 
     # check if ep_dicts have already been saved in /tmp
@@ -239,6 +238,7 @@ def load_from_raw(
         ###########################################################
 
         # loop through all cameras
+        print(f">> video {video}")
         for im_key in image_keys:
             img_key = f"observation.images.{im_key}"
             imgs_array = image_array_dict[im_key]
@@ -252,6 +252,7 @@ def load_from_raw(
                 # encode images to a mp4 video
                 fname = f"{img_key}_episode_{ep_idx:06d}.mp4"
                 video_path = videos_dir / fname
+                print(f">> video_path {video_path}")
                 encode_video_frames(tmp_imgs_dir, video_path, fps, **(encoding or {}))
 
                 # clean temporary images directory
