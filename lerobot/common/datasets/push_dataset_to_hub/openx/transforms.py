@@ -784,7 +784,7 @@ def robo_set_dataset_transform(trajectory: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def libero_dataset_transform(trajectory: Dict[str, Any]) -> Dict[str, Any]:
-    print(trajectory.keys())
+    print(trajectory['observation'].keys())
 
     # Tackle state
     # Extract the two elements (each of length 8)
@@ -795,7 +795,7 @@ def libero_dataset_transform(trajectory: Dict[str, Any]) -> Dict[str, Any]:
     trajectory["observation"]["state"] = tf.concat([element_1, element_2], axis=0)
 
     # Tackle images
-    trajectory["observation"]["images"]["image"] = trajectory["observation"]["image"]
+    trajectory["observation"]["image"] = trajectory["observation"]["images"]["image"]
     return trajectory
 
 
