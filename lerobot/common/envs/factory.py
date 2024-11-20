@@ -68,61 +68,61 @@ def make_env(cfg: DictConfig, n_envs: int | None = None) -> gym.vector.VectorEnv
 
 
 
-"""Utils for evaluating policies in LIBERO simulation environments."""
-
-import os
-
-current_working_directory = os.getcwd()
-os.chdir(os.environ['PYTHONPATH'])
-from libero.libero import get_libero_path
-from libero.libero.envs import OffScreenRenderEnv, SubprocVectorEnv
-from libero.libero import benchmark
-os.chdir(current_working_directory)
-
-
-
-def get_libero_env(task, resolution=256):
-    """Initializes and returns the LIBERO environment, along with the task description."""
-    task_description = task.language
-    task_bddl_file = os.path.join(get_libero_path("bddl_files"), task.problem_folder, task.bddl_file)
-    env_args = {"bddl_file_name": task_bddl_file, "camera_heights": resolution, "camera_widths": resolution}
-    env = OffScreenRenderEnv(**env_args)
-    env.seed(0)  # IMPORTANT: seed seems to affect object positions even when using fixed initial state
-    return env, task_description
-
-
-
-def make_libero_env(cfg: DictConfig, task_suite_name, task_id: int, resolution=256, n_envs: int | None = None) -> gym.vector.VectorEnv | None:
-    """Makes a gym vector environment according to the evaluation config.
-
-    n_envs can be used to override eval.batch_size in the configuration. Must be at least 1.
-    """
-
-    # Initialize LIBERO task suite
-    benchmark_dict = benchmark.get_benchmark_dict()
-    task_suite = benchmark_dict[task_suite_name]()
-    task = task_suite.get_task(task_id)
-
-    env, task_description = get_libero_env(task, resolution=resolution)
-    print(f"Current task description: {task_description}")
-
-    initial_states = task_suite.get_task_init_states(task_id)
-    env.reset()
-    env.set_init_state(initial_states[0 % initial_states.shape[0]])
-
-
-
-
-    if n_envs is not None and n_envs < 1:
-        raise ValueError("`n_envs must be at least 1")
-
-    # batched version of the env that returns an observation of shape (b, c)
-    env_cls = gym.vector.AsyncVectorEnv if cfg.eval.use_async_envs else gym.vector.SyncVectorEnv
-    env = env_cls(
-        [
-            lambda: env
-            for _ in range(n_envs if n_envs is not None else cfg.eval.batch_size)
-        ]
-    )
-
-    return env
+# """Utils for evaluating policies in LIBERO simulation environments."""
+#
+# import os
+#
+# current_working_directory = os.getcwd()
+# os.chdir(os.environ['PYTHONPATH'])
+# from libero.libero import get_libero_path
+# from libero.libero.envs import OffScreenRenderEnv, SubprocVectorEnv
+# from libero.libero import benchmark
+# os.chdir(current_working_directory)
+#
+#
+#
+# def get_libero_env(task, resolution=256):
+#     """Initializes and returns the LIBERO environment, along with the task description."""
+#     task_description = task.language
+#     task_bddl_file = os.path.join(get_libero_path("bddl_files"), task.problem_folder, task.bddl_file)
+#     env_args = {"bddl_file_name": task_bddl_file, "camera_heights": resolution, "camera_widths": resolution}
+#     env = OffScreenRenderEnv(**env_args)
+#     env.seed(0)  # IMPORTANT: seed seems to affect object positions even when using fixed initial state
+#     return env, task_description
+#
+#
+#
+# def make_libero_env(cfg: DictConfig, task_suite_name, task_id: int, resolution=256, n_envs: int | None = None) -> gym.vector.VectorEnv | None:
+#     """Makes a gym vector environment according to the evaluation config.
+#
+#     n_envs can be used to override eval.batch_size in the configuration. Must be at least 1.
+#     """
+#
+#     # Initialize LIBERO task suite
+#     benchmark_dict = benchmark.get_benchmark_dict()
+#     task_suite = benchmark_dict[task_suite_name]()
+#     task = task_suite.get_task(task_id)
+#
+#     env, task_description = get_libero_env(task, resolution=resolution)
+#     print(f"Current task description: {task_description}")
+#
+#     initial_states = task_suite.get_task_init_states(task_id)
+#     env.reset()
+#     env.set_init_state(initial_states[0 % initial_states.shape[0]])
+#
+#
+#
+#
+#     if n_envs is not None and n_envs < 1:
+#         raise ValueError("`n_envs must be at least 1")
+#
+#     # batched version of the env that returns an observation of shape (b, c)
+#     env_cls = gym.vector.AsyncVectorEnv if cfg.eval.use_async_envs else gym.vector.SyncVectorEnv
+#     env = env_cls(
+#         [
+#             lambda: env
+#             for _ in range(n_envs if n_envs is not None else cfg.eval.batch_size)
+#         ]
+#     )
+#
+#     return env

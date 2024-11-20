@@ -783,6 +783,21 @@ def robo_set_dataset_transform(trajectory: Dict[str, Any]) -> Dict[str, Any]:
     return trajectory
 
 
+def libero_dataset_transform(trajectory: Dict[str, Any]) -> Dict[str, Any]:
+    # Tackle state
+    # Extract the two elements (each of length 8)
+    element_1 = trajectory["observation"]["state"][0]  # Shape: (8,)
+    element_2 = trajectory["observation"]["state"][1]  # Shape: (8,)
+
+    # Concatenate them along axis 0 to create a single tensor of length 16
+    trajectory["observation"]["state"] = tf.concat([element_1, element_2], axis=0)
+
+    # Tackle images
+    trajectory["observation"]["images"]["image"] = trajectory["observation"]["image"]
+    return trajectory
+
+
+
 def identity_transform(trajectory: Dict[str, Any]) -> Dict[str, Any]:
     return trajectory
 
@@ -859,5 +874,5 @@ OPENX_STANDARDIZATION_TRANSFORMS = {
     "libero44_dataset_converted_externally_to_rlds": identity_transform,
     "libero44_KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet": identity_transform,
     "libero44_KITCHEN_SCENE1_open_the_top_drawer_of_the_cabinet": identity_transform,
-    "libero44_KITCHEN_SCENE1_put_the_black_bowl_on_the_plate": identity_transform,
+    "libero44_KITCHEN_SCENE1_put_the_black_bowl_on_the_plate": libero_dataset_transform,
 }

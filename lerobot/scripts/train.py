@@ -36,7 +36,7 @@ from lerobot.common.datasets.lerobot_dataset import MultiLeRobotDataset
 from lerobot.common.datasets.online_buffer import OnlineBuffer, compute_sampler_weights
 from lerobot.common.datasets.sampler import EpisodeAwareSampler
 from lerobot.common.datasets.utils import cycle
-from lerobot.common.envs.factory import make_env, make_libero_env
+from lerobot.common.envs.factory import make_env #, make_libero_env
 from lerobot.common.logger import Logger, log_output_dir
 from lerobot.common.policies.factory import make_policy
 from lerobot.common.policies.policy_protocol import PolicyWithUpdate
@@ -429,6 +429,8 @@ def train(cfg: DictConfig, out_dir: str | None = None, job_name: str | None = No
         dataloading_s = time.perf_counter() - start_time
 
         for key in batch:
+            if type(batch[key]) == list:
+                continue
             batch[key] = batch[key].to(device, non_blocking=True)
 
         train_info = update_policy(
