@@ -10,7 +10,8 @@ dataset_repo_id: yygx/libero44_KITCHEN_SCENE1_put_the_black_bowl_on_the_plate
 
 override_dataset_stats:
   # TODO(rcadene, alexander-soare): should we remove image stats as well? do we use a pretrained vision model?
-  observation.image:
+  # observation.image:
+  observation.images.image:
     mean: [[[0.5]], [[0.5]], [[0.5]]]  # (c,1,1)
     std: [[[0.5]], [[0.5]], [[0.5]]]  # (c,1,1)
   # TODO(rcadene, alexander-soare): we override state and action stats to use the same as the pretrained model
