@@ -4,8 +4,9 @@
 # Note: We do not track EMA model weights as we discovered it does not improve the results. See
 #       https://github.com/huggingface/lerobot/pull/134 for more details.
 
-seed: 100000
-dataset_repo_id: lerobot/pusht
+seed: 10000  # yy: I modified this from 100000 to 10000
+# yy: need to modify this in command line TODO
+dataset_repo_id: yygx/libero44_KITCHEN_SCENE1_put_the_black_bowl_on_the_plate
 
 override_dataset_stats:
   # TODO(rcadene, alexander-soare): should we remove image stats as well? do we use a pretrained vision model?
@@ -22,10 +23,10 @@ override_dataset_stats:
     max: [511.0, 511.0]
 
 training:
-  offline_steps: 200000
+  offline_steps: 5 # 200000
   online_steps: 0
-  eval_freq: 25000
-  save_freq: 25000
+  eval_freq: 2  # 25000
+  save_freq: 2  # 25000
   save_checkpoint: true
 
   batch_size: 64
@@ -102,3 +103,10 @@ policy:
 
   # Loss computation
   do_mask_loss_for_padding: false
+
+# Libero related params
+# yy: need to modify this in command line TODO
+libero:
+  task_suite_name: 'libero_90'
+  task_id: 4
+  resolution: 256

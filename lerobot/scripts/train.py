@@ -36,7 +36,7 @@ from lerobot.common.datasets.lerobot_dataset import MultiLeRobotDataset
 from lerobot.common.datasets.online_buffer import OnlineBuffer, compute_sampler_weights
 from lerobot.common.datasets.sampler import EpisodeAwareSampler
 from lerobot.common.datasets.utils import cycle
-from lerobot.common.envs.factory import make_env
+from lerobot.common.envs.factory import make_env, make_libero_env
 from lerobot.common.logger import Logger, log_output_dir
 from lerobot.common.policies.factory import make_policy
 from lerobot.common.policies.policy_protocol import PolicyWithUpdate
@@ -323,7 +323,10 @@ def train(cfg: DictConfig, out_dir: str | None = None, job_name: str | None = No
     eval_env = None
     if cfg.training.eval_freq > 0:
         logging.info("make_env")
-        eval_env = make_env(cfg)
+        if "libero" in cfg.dataset_repo_id:
+            eval_env = make_libero_env(cfg, task_suite_name=cfg.libero.task_suite_name, task_id=cfg.libero.task_id, resolution=cfg.libero.resolution)
+        else:
+            eval_env = make_env(cfg)
 
     logging.info("make_policy")
     policy = make_policy(
@@ -454,6 +457,26 @@ def train(cfg: DictConfig, out_dir: str | None = None, job_name: str | None = No
             eval_env.close()
         logging.info("End of training")
         return
+
+
+    # ============================================================================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     # Online training.
 
