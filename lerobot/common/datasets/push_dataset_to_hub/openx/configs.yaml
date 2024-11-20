@@ -660,7 +660,7 @@ OPENX_DATASET_CONFIGS:
 #      - joint_state
     fps: 30
 
-  libero44_KITCHEN_SCENE1_put_the_black_bowl_on_the_plate:
+  libero44_KITCHEN_SCENE1_open_the_top_drawer_of_the_cabinet:
     image_obs_keys:
       - image
 #      - wrist_image

@@ -858,5 +858,5 @@ OPENX_STANDARDIZATION_TRANSFORMS = {
     "spoc": identity_transform,
     "libero44_dataset_converted_externally_to_rlds": identity_transform,
     "libero44_KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet": identity_transform,
-    "libero44_KITCHEN_SCENE10_close_the_top_drawer_of_the_cabinet": identity_transform,
+    "libero44_KITCHEN_SCENE1_open_the_top_drawer_of_the_cabinet": identity_transform,
 }
