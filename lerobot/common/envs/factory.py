@@ -71,9 +71,15 @@ def make_env(cfg: DictConfig, n_envs: int | None = None) -> gym.vector.VectorEnv
 """Utils for evaluating policies in LIBERO simulation environments."""
 
 import os
+
+current_working_directory = os.getcwd()
+os.chdir(os.environ['PYTHONPATH'])
 from libero.libero import get_libero_path
 from libero.libero.envs import OffScreenRenderEnv, SubprocVectorEnv
 from libero.libero import benchmark
+os.chdir(current_working_directory)
+
+
 
 def get_libero_env(task, resolution=256):
     """Initializes and returns the LIBERO environment, along with the task description."""
