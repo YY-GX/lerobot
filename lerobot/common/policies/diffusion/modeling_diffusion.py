@@ -149,7 +149,7 @@ class DiffusionPolicy(
     def forward(self, batch: dict[str, Tensor]) -> dict[str, Tensor]:
         """Run the batch through the model and compute the loss for training or validation."""
         # yy: modify the state value into 1
-        batch['observation.state'] = batch['observation.state'].reshape(-1, 16)
+        # batch['observation.state'] = batch['observation.state'].reshape(-1, 16)
         batch = self.normalize_inputs(batch)
         if len(self.expected_image_keys) > 0:
             batch = dict(batch)  # shallow copy so that adding a key doesn't modify the original

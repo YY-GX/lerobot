@@ -217,6 +217,8 @@ def load_from_raw(
                     states.append(tf_to_torch(episode["observation"][key]))
                 else:
                     states.append(torch.zeros(num_frames, 1))  # pad with zeros
+            print(len(states))
+            print(states[0].shape)
             states = torch.cat(states, dim=1)
             # assert states.shape == (num_frames, 8), f"states shape: {states.shape}"
         else:
