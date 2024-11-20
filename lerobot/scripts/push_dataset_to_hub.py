@@ -192,6 +192,8 @@ def push_dataset_to_hub(
         meta_data_dir = Path(cache_dir) / "meta_data"
         videos_dir = Path(cache_dir) / "videos"
 
+    print(f">> videos_dir: {videos_dir}")
+
     if raw_format is None:
         # TODO(rcadene, adilzouitine): implement auto_find_raw_format
         raise NotImplementedError()

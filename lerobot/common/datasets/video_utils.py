@@ -57,7 +57,6 @@ def load_from_videos(
             # load one frame
             timestamps = [item[key]["timestamp"]]
             video_path = data_dir / item[key]["path"]
-
             frames = decode_video_frames_torchvision(video_path, timestamps, tolerance_s, backend)
             item[key] = frames[0]
 
