@@ -157,6 +157,7 @@ def load_from_raw(
     ep_dicts = []
     # Init temp path to save ep_dicts in case of crash
     tmp_ep_dicts_dir = videos_dir.parent.joinpath("ep_dicts")
+    print(f">> tmp_ep_dicts_dir: {tmp_ep_dicts_dir}")
     tmp_ep_dicts_dir.mkdir(parents=True, exist_ok=True)
 
     # check if ep_dicts have already been saved in /tmp
