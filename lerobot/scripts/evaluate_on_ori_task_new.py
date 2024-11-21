@@ -221,7 +221,7 @@ def main():
                     steps += 1
                     data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
                     # TODO
-                    data = observation_to_desired_shape(data, prev_observation=prev_observation)
+                    data = observation_to_desired_shape(data, prev_observation=prev_observation, n_obs_steps=cfg_diffusion.n_obs_steps)
                     prev_observation = copy.deepcopy(data)
                     with torch.inference_mode():
                         actions = policy.select_action(data)
