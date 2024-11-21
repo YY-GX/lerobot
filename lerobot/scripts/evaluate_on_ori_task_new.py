@@ -34,9 +34,10 @@ os.chdir(current_working_directory)
 ############### Lerobot Imports ###############
 from lerobot.common.utils.utils import init_hydra_config
 from lerobot.common.policies.factory import make_policy
-
+from pathlib import Path
 
 def load_policy(pretrained_policy_path):
+    pretrained_policy_path = Path(pretrained_policy_path)
     hydra_cfg = init_hydra_config(str(pretrained_policy_path / "config.yaml"), None)
     policy = make_policy(hydra_cfg=hydra_cfg, pretrained_policy_name_or_path=str(pretrained_policy_path))
     policy.eval()
