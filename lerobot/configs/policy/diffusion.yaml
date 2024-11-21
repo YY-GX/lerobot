@@ -27,7 +27,7 @@ training:
   offline_steps: 200000 # 200000
   online_steps: 0
   eval_freq: -25000  # yy: no evaluation here, so use negative value  # 25000
-  save_freq: 25000  # 25000
+  save_freq: 5000  # 25000
   save_checkpoint: true
 
   batch_size: 64
