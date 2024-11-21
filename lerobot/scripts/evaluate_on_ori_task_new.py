@@ -55,9 +55,7 @@ def observation_to_desired_shape(observation, prev_observation=None, n_obs_steps
     state = torch.cat((gripper_states, joint_states), dim=1)  # Shape [20, 9]
 
     # Extract image observation and ensure desired shape
-    print(f">> agentview_rgb.size(): {observation['obs']['agentview_rgb'].size()}")
-    agentview_rgb = observation['obs']["agentview_rgb"].view(-1, 3, -1, -1)  # Shape [20, 3, 256, 256]
-    print(f">> agentview_rgb.size(): {agentview_rgb.size()}")
+    agentview_rgb = observation['obs']["agentview_rgb"]  # Shape [20, 3, 128, 128]
 
     if prev_observation is None:
         # For the first timestep, add an extra dimension and duplicate the observation
