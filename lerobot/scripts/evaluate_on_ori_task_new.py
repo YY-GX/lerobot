@@ -1,4 +1,5 @@
 import argparse
+import copy
 import sys
 import os
 
@@ -33,14 +34,43 @@ os.chdir(current_working_directory)
 ############### Lerobot Imports ###############
 from lerobot.common.utils.utils import init_hydra_config
 from lerobot.common.policies.factory import make_policy
+import hydra
 
 
-def load_policy(pretrained_policy_path):
+@hydra.main(version_base="1.2", config_name="default", config_path="../configs")
+def load_policy(cfg: dict, pretrained_policy_path):
     hydra_cfg = init_hydra_config(str(pretrained_policy_path / "config.yaml"), None)
     policy = make_policy(hydra_cfg=hydra_cfg, pretrained_policy_name_or_path=str(pretrained_policy_path))
     policy.eval()
-    return policy
+    return policy, cfg
 
+
+def observation_to_desired_shape(observation, prev_observation=None, n_obs_steps=2):
+    desired_observation = {}
+
+    # Extract gripper and joint states and concatenate them
+    gripper_states = observation['obs']['gripper_states']
+    joint_states = observation['obs']['joint_states']
+    state = torch.cat((gripper_states, joint_states), dim=1)  # Shape [20, 9]
+
+    # Extract image observation and ensure desired shape
+    agentview_rgb = observation['obs']["agentview_rgb"].view(-1, 3, 256, 256)  # Shape [20, 3, 256, 256]
+    print(f">> agentview_rgb.size(): {agentview_rgb.size()}")
+
+    if prev_observation is None:
+        # For the first timestep, add an extra dimension and duplicate the observation
+        stacked_state = state.unsqueeze(1).expand(-1, n_obs_steps, -1)  # Shape [20, 2, 9]
+        stacked_image = agentview_rgb.unsqueeze(1).expand(-1, n_obs_steps, -1, -1, -1)  # Shape [20, 2, 3, 256, 256]
+    else:
+        # Otherwise, stack the current and previous observations
+        stacked_state = torch.cat((prev_observation['observation.state'], state.unsqueeze(1)), dim=1)  # Shape [20, 2, 9]
+        stacked_image = torch.cat((prev_observation['observation.images.image'], agentview_rgb.unsqueeze(1)), dim=1)  # Shape [20, 2, 3, 256, 256]
+
+    # Set the stacked tensors to the desired_observation dictionary
+    desired_observation['observation.state'] = stacked_state
+    desired_observation['observation.images.image'] = stacked_image
+
+    return desired_observation
 
 
 
@@ -57,7 +87,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Evaluation Script")
     parser.add_argument("--model_path_folder", type=str, default="/mnt/arc/yygx/pkgs_baselines/LIBERO/libero/experiments/libero_90/training_eval_skills_original_env/Sequential/BCRNNPolicy_seed10000/all/")
     parser.add_argument("--pretrained_policy_path", type=str,
-                        default="/mnt/arc/yygx/pkgs_baselines/lerobot/outputs/train/2024-11-21/15-28-52_pusht_diffusion_default/...")
+                        default="/mnt/arc/yygx/pkgs_baselines/lerobot/outputs/train/2024-11-21/16-45-45_pusht_diffusion_default/checkpoints/005000/pretrained_model")
     parser.add_argument(
         "--benchmark",
         type=str,
@@ -121,7 +151,7 @@ def main():
         # TODO
         # algo = safe_device(get_algo_class(algo_map["base"])(n_tasks, cfg), cfg.device)
         # algo.policy.load_state_dict(sd)
-        policy = load_policy(args.pretrained_policy_path)
+        policy, cfg_diffusion = load_policy(args.pretrained_policy_path)
 
 
 
@@ -183,12 +213,16 @@ def main():
             num_success = 0
             for _ in range(5):  # simulate the physics without any actions
                 env.step(np.zeros((env_num, 7)))
-    
+
+            prev_observation = None
+
             with torch.no_grad():
                 while steps < cfg.eval.max_steps:
                     steps += 1
                     data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
                     # TODO
+                    data = observation_to_desired_shape(data, prev_observation=prev_observation)
+                    prev_observation = copy.deepcopy(data)
                     with torch.inference_mode():
                         actions = policy.select_action(data)
                     obs, reward, done, info = env.step(actions)
