@@ -26,7 +26,7 @@ training:
   # yy: important part
   offline_steps: 200000 # 200000
   online_steps: 0
-  eval_freq: 25000  # 25000
+  eval_freq: -25000  # no evaluation here  # 25000
   save_freq: 25000  # 25000
   save_checkpoint: true
 
