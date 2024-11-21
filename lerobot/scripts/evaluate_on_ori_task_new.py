@@ -46,7 +46,34 @@ def load_policy(pretrained_policy_path):
     return policy, cfg
 
 
-def observation_to_desired_shape(observation, prev_observation=None, n_obs_steps=2):
+# def observation_to_desired_shape(observation, prev_observation=None, n_obs_steps=2):
+#     desired_observation = {}
+#
+#     # Extract gripper and joint states and concatenate them
+#     gripper_states = observation['obs']['gripper_states']
+#     joint_states = observation['obs']['joint_states']
+#     state = torch.cat((gripper_states, joint_states), dim=1)  # Shape [20, 9]
+#
+#     # Extract image observation and ensure desired shape
+#     agentview_rgb = observation['obs']["agentview_rgb"]  # Shape [20, 3, 128, 128]
+#
+#     if prev_observation is None:
+#         # For the first timestep, add an extra dimension and duplicate the observation
+#         stacked_state = state.unsqueeze(1).expand(-1, n_obs_steps, -1)  # Shape [20, 2, 9]
+#         stacked_image = agentview_rgb.unsqueeze(1).expand(-1, n_obs_steps, -1, -1, -1)  # Shape [20, 2, 3, 256, 256]
+#     else:
+#         # Otherwise, stack the current and previous observations
+#         stacked_state = torch.cat((prev_observation['observation.state'], state.unsqueeze(1)), dim=1)  # Shape [20, 2, 9]
+#         stacked_image = torch.cat((prev_observation['observation.images.image'], agentview_rgb.unsqueeze(1)), dim=1)  # Shape [20, 2, 3, 256, 256]
+#
+#     # Set the stacked tensors to the desired_observation dictionary
+#     desired_observation['observation.state'] = stacked_state
+#     desired_observation['observation.images.image'] = stacked_image
+#
+#     return desired_observation
+
+
+def observation_to_desired_shape(observation):
     desired_observation = {}
 
     # Extract gripper and joint states and concatenate them
@@ -57,18 +84,9 @@ def observation_to_desired_shape(observation, prev_observation=None, n_obs_steps
     # Extract image observation and ensure desired shape
     agentview_rgb = observation['obs']["agentview_rgb"]  # Shape [20, 3, 128, 128]
 
-    if prev_observation is None:
-        # For the first timestep, add an extra dimension and duplicate the observation
-        stacked_state = state.unsqueeze(1).expand(-1, n_obs_steps, -1)  # Shape [20, 2, 9]
-        stacked_image = agentview_rgb.unsqueeze(1).expand(-1, n_obs_steps, -1, -1, -1)  # Shape [20, 2, 3, 256, 256]
-    else:
-        # Otherwise, stack the current and previous observations
-        stacked_state = torch.cat((prev_observation['observation.state'], state.unsqueeze(1)), dim=1)  # Shape [20, 2, 9]
-        stacked_image = torch.cat((prev_observation['observation.images.image'], agentview_rgb.unsqueeze(1)), dim=1)  # Shape [20, 2, 3, 256, 256]
-
     # Set the stacked tensors to the desired_observation dictionary
-    desired_observation['observation.state'] = stacked_state
-    desired_observation['observation.images.image'] = stacked_image
+    desired_observation['observation.state'] = state
+    desired_observation['observation.images.image'] = agentview_rgb
 
     return desired_observation
 
@@ -221,9 +239,10 @@ def main():
                     steps += 1
                     data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
                     # TODO
-                    data = observation_to_desired_shape(data, prev_observation=prev_observation, n_obs_steps=cfg_diffusion.policy.n_obs_steps)
+                    # data = observation_to_desired_shape(data, prev_observation=prev_observation, n_obs_steps=cfg_diffusion.policy.n_obs_steps)
+                    data = observation_to_desired_shape(data)
                     print(data['observation.images.image'].size())
-                    prev_observation = copy.deepcopy(data)
+                    # prev_observation = copy.deepcopy(data)
                     with torch.inference_mode():
                         actions = policy.select_action(data)
                     obs, reward, done, info = env.step(actions)
