@@ -34,14 +34,14 @@ os.chdir(current_working_directory)
 ############### Lerobot Imports ###############
 from lerobot.common.utils.utils import init_hydra_config
 from lerobot.common.policies.factory import make_policy
-import hydra
 
 
-@hydra.main(version_base="1.2", config_name="default", config_path="../configs")
-def load_policy(cfg: dict, pretrained_policy_path):
+def load_policy(pretrained_policy_path):
     hydra_cfg = init_hydra_config(str(pretrained_policy_path / "config.yaml"), None)
     policy = make_policy(hydra_cfg=hydra_cfg, pretrained_policy_name_or_path=str(pretrained_policy_path))
     policy.eval()
+
+    cfg = init_hydra_config(str(pretrained_policy_path / "config.yaml"), None)
     return policy, cfg
 
 
@@ -221,7 +221,7 @@ def main():
                     steps += 1
                     data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
                     # TODO
-                    data = observation_to_desired_shape(data, prev_observation=prev_observation, n_obs_steps=cfg_diffusion.n_obs_steps)
+                    data = observation_to_desired_shape(data, prev_observation=prev_observation, n_obs_steps=cfg_diffusion.policy.n_obs_steps)
                     prev_observation = copy.deepcopy(data)
                     with torch.inference_mode():
                         actions = policy.select_action(data)
