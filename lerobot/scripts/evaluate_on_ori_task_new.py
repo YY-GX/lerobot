@@ -55,7 +55,7 @@ def observation_to_desired_shape(observation, prev_observation=None, n_obs_steps
     state = torch.cat((gripper_states, joint_states), dim=1)  # Shape [20, 9]
 
     # Extract image observation and ensure desired shape
-    agentview_rgb = observation['obs']["agentview_rgb"].view(-1, 3, 256, 256)  # Shape [20, 3, 256, 256]
+    agentview_rgb = observation['obs']["agentview_rgb"].view(-1, 3, -1, -1)  # Shape [20, 3, 256, 256]
     print(f">> agentview_rgb.size(): {agentview_rgb.size()}")
 
     if prev_observation is None:
@@ -223,6 +223,7 @@ def main():
                     data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
                     # TODO
                     data = observation_to_desired_shape(data, prev_observation=prev_observation, n_obs_steps=cfg_diffusion.policy.n_obs_steps)
+                    print(data['observation.images.image'].size())
                     prev_observation = copy.deepcopy(data)
                     with torch.inference_mode():
                         actions = policy.select_action(data)
