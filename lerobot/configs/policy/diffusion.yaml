@@ -5,7 +5,6 @@
 #       https://github.com/huggingface/lerobot/pull/134 for more details.
 
 seed: 10000  # yy: I modified this from 100000 to 10000
-# yy: need to modify this in command line TODO
 dataset_repo_id: yygx/libero44_KITCHEN_SCENE1_put_the_black_bowl_on_the_plate
 
 #override_dataset_stats:
@@ -24,10 +23,11 @@ dataset_repo_id: yygx/libero44_KITCHEN_SCENE1_put_the_black_bowl_on_the_plate
 #    max: [511.0, 511.0]
 
 training:
-  offline_steps: 5 # 200000
+  # yy: important part
+  offline_steps: 200000 # 200000
   online_steps: 0
-  eval_freq: 2  # 25000
-  save_freq: 2  # 25000
+  eval_freq: 25000  # 25000
+  save_freq: 25000  # 25000
   save_checkpoint: true
 
   batch_size: 64
@@ -58,6 +58,7 @@ policy:
   name: diffusion
 
   # Input / output structure.
+  # yy: important part
   n_obs_steps: 2
   horizon: 16
   n_action_steps: 8
@@ -65,8 +66,10 @@ policy:
   input_shapes:
     # TODO(rcadene, alexander-soare): add variables for height and width from the dataset/env?
     # observation.image: [3, 96, 96]
-    observation.images.image: [3, 256, 256]
-    observation.state: [16]
+    # yy: important part
+    observation.images.image: [3, 128, 128]
+    observation.state: [8]
+  # yy: important part
   output_shapes:
     action: [7]
 
@@ -109,7 +112,6 @@ policy:
   do_mask_loss_for_padding: false
 
 # Libero related params
-# yy: need to modify this in command line TODO
 libero:
   task_suite_name: 'libero_90'
   task_id: 4
