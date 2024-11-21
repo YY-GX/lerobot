@@ -68,7 +68,7 @@ policy:
     # observation.image: [3, 96, 96]
     # yy: important part
     observation.images.image: [3, 128, 128]
-    observation.state: [8]
+    observation.state: [9]
   # yy: important part
   output_shapes:
     action: [7]
