@@ -245,6 +245,8 @@ def main():
                     # prev_observation = copy.deepcopy(data)
                     with torch.inference_mode():
                         actions = policy.select_action(data)
+                    print(actions.size())
+                    actions = actions.cpu()
                     obs, reward, done, info = env.step(actions)
                     video_writer_agentview.append_vector_obs(
                         obs, dones, camera_name="agentview_image"
