@@ -151,7 +151,7 @@ def main():
         # TODO
         # algo = safe_device(get_algo_class(algo_map["base"])(n_tasks, cfg), cfg.device)
         # algo.policy.load_state_dict(sd)
-        policy, cfg_diffusion = load_policy(args.pretrained_policy_path)
+        policy, cfg_diffusion = load_policy(pretrained_policy_path=args.pretrained_policy_path)
 
 
 
