@@ -224,8 +224,11 @@ def main():
             init_states_path = os.path.join(
                 cfg.init_states_folder, task.problem_folder, task.init_states_file
             )
+            print("debug 2.1")
             init_states = torch.load(init_states_path)
+            print("debug 2.2")
             indices = np.arange(env_num) % init_states.shape[0]
+            print("debug 2.3")
             init_states_ = init_states[indices]
             print("debug 3")
     
