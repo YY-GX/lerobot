@@ -236,6 +236,7 @@ def main():
 
             with torch.no_grad():
                 while steps < cfg.eval.max_steps:
+                    print(f">> step: {steps}")
                     steps += 1
                     data = raw_obs_to_tensor_obs(obs, task_emb, cfg)
                     # TODO
