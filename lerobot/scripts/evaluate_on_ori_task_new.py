@@ -177,6 +177,8 @@ def main():
         task_embs = get_task_embs(cfg, descriptions)
         benchmark.set_task_embs(task_embs)
         task = benchmark.get_task(task_idx)
+
+        print("debug 0")
     
         """
         Start Evaluation
@@ -196,6 +198,8 @@ def main():
 
         os.system(f"mkdir -p {video_folder}")
 
+        print("debug 1")
+
         with Timer() as t:
             video_writer_agentview = VideoWriter(os.path.join(video_folder, "agentview"), save_video=True,
                                                  single_video=False)
@@ -209,6 +213,7 @@ def main():
                 "camera_heights": cfg.data.img_h,
                 "camera_widths": cfg.data.img_w,
             }
+            print("debug 2")
     
             env_num = cfg['eval']['n_eval']
             env = SubprocVectorEnv(
@@ -222,11 +227,13 @@ def main():
             init_states = torch.load(init_states_path)
             indices = np.arange(env_num) % init_states.shape[0]
             init_states_ = init_states[indices]
+            print("debug 3")
     
             dones = [False] * env_num
             steps = 0
             obs = env.set_init_state(init_states_)
             task_emb = benchmark.get_task_emb(task_idx)
+            print("debug 4")
     
             num_success = 0
             for _ in range(5):  # simulate the physics without any actions
