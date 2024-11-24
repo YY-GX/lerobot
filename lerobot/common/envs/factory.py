@@ -92,6 +92,21 @@ def get_libero_env(task, resolution=256):
     return env, task_description
 
 
+def get_libero_env_factory(task, resolution=256):
+    """Returns a callable that initializes the LIBERO environment."""
+    task_description = task.language
+    task_bddl_file = os.path.join(get_libero_path("bddl_files"), task.problem_folder, task.bddl_file)
+    env_args = {"bddl_file_name": task_bddl_file, "camera_heights": resolution, "camera_widths": resolution}
+
+    def create_env():
+        env = OffScreenRenderEnv(**env_args)
+        env.seed(0)  # IMPORTANT: seed seems to affect object positions even when using fixed initial state
+        return env
+
+    return create_env, task_description
+
+
+
 
 def make_libero_env(cfg: DictConfig, task_suite_name, task_id: int, resolution=256, n_envs: int | None = None) -> gym.vector.VectorEnv | None:
     """Makes a gym vector environment according to the evaluation config.
@@ -104,7 +119,8 @@ def make_libero_env(cfg: DictConfig, task_suite_name, task_id: int, resolution=2
     task_suite = benchmark_dict[task_suite_name]()
     task = task_suite.get_task(task_id)
 
-    env, task_description = get_libero_env(task, resolution=resolution)
+    # env, task_description = get_libero_env(task, resolution=resolution)
+    env, task_description = get_libero_env_factory(task, resolution=resolution)
     print(f"Current task description: {task_description}")
 
     initial_states = task_suite.get_task_init_states(task_id)
