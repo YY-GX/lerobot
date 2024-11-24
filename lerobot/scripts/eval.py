@@ -478,7 +478,7 @@ def main(
 
     logging.info("Making environment.")
     # env = make_env(hydra_cfg)
-    env = make_libero_env(hydra_cfg)
+    env = make_libero_env(hydra_cfg, task_suite_name="libero_90", task_id=4, resolution=128, n_envs=20)
 
     logging.info("Making policy.")
     if hydra_cfg_path is None:
