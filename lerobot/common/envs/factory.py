@@ -108,8 +108,8 @@ def make_libero_env(cfg: DictConfig, task_suite_name, task_id: int, resolution=2
     print(f"Current task description: {task_description}")
 
     initial_states = task_suite.get_task_init_states(task_id)
-    env.reset()
-    env.set_init_state(initial_states[0 % initial_states.shape[0]])
+    # env.reset()
+    # env.set_init_state(initial_states[0 % initial_states.shape[0]])
 
 
 
@@ -132,5 +132,9 @@ def make_libero_env(cfg: DictConfig, task_suite_name, task_id: int, resolution=2
             for _ in range(n_envs if n_envs is not None else cfg.eval.batch_size)
         ]
     )
+
+    # env = SubprocVectorEnv(
+    #     [lambda: OffScreenRenderEnv(**env_args) for _ in range(env_num)]
+    # )
 
     return env
