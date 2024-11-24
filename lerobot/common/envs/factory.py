@@ -146,7 +146,7 @@ def make_libero_env(cfg: DictConfig, task_suite_name, task_id: int, resolution=2
         [
             lambda: env
             for _ in range(n_envs if n_envs is not None else cfg.eval.batch_size)
-        ], num_envs=n_envs
+        ]
     )
 
     # env = SubprocVectorEnv(
