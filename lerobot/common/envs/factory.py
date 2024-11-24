@@ -86,6 +86,7 @@ def get_libero_env(task, resolution=256):
     task_description = task.language
     task_bddl_file = os.path.join(get_libero_path("bddl_files"), task.problem_folder, task.bddl_file)
     env_args = {"bddl_file_name": task_bddl_file, "camera_heights": resolution, "camera_widths": resolution}
+    # env_args = {"metadata": None, "observation_space": None, "action_space": None}
     env = OffScreenRenderEnv(**env_args)
     env.seed(0)  # IMPORTANT: seed seems to affect object positions even when using fixed initial state
     return env, task_description
@@ -117,8 +118,15 @@ def make_libero_env(cfg: DictConfig, task_suite_name, task_id: int, resolution=2
         raise ValueError("`n_envs must be at least 1")
 
     # batched version of the env that returns an observation of shape (b, c)
-    env_cls = gym.vector.AsyncVectorEnv if cfg.eval.use_async_envs else gym.vector.SyncVectorEnv
-    env = env_cls(
+    # env_cls = gym.vector.AsyncVectorEnv if cfg.eval.use_async_envs else gym.vector.SyncVectorEnv
+    # env = env_cls(
+    #     [
+    #         lambda: env
+    #         for _ in range(n_envs if n_envs is not None else cfg.eval.batch_size)
+    #     ]
+    # )
+
+    env = SubprocVectorEnv(
         [
             lambda: env
             for _ in range(n_envs if n_envs is not None else cfg.eval.batch_size)
