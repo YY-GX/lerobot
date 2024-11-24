@@ -142,15 +142,24 @@ def make_libero_env(cfg: DictConfig, task_suite_name, task_id: int, resolution=2
     #     ]
     # )
 
-    env = SubprocVectorEnv(
-        [
-            lambda: env
-            for _ in range(n_envs if n_envs is not None else cfg.eval.batch_size)
-        ]
-    )
+    # env = SubprocVectorEnv(
+    #     [
+    #         lambda: env
+    #         for _ in range(n_envs if n_envs is not None else cfg.eval.batch_size)
+    #     ]
+    # )
 
     # env = SubprocVectorEnv(
     #     [lambda: OffScreenRenderEnv(**env_args) for _ in range(env_num)]
     # )
+
+
+
+    task_bddl_file = os.path.join(get_libero_path("bddl_files"), task.problem_folder, task.bddl_file)
+    env_args = {"bddl_file_name": task_bddl_file, "camera_heights": resolution, "camera_widths": resolution}
+
+    env = SubprocVectorEnv(
+        [lambda: OffScreenRenderEnv(**env_args) for _ in range(n_envs if n_envs is not None else cfg.eval.batch_size)]
+    )
 
     return env
