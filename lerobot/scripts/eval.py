@@ -123,7 +123,8 @@ def rollout(
     # Reset the policy and environments.
     policy.reset()
 
-    observation, info = env.reset(seed=seeds)
+    # observation, info = env.reset(seed=seeds)
+    observation, info = env.reset()
     if render_callback is not None:
         render_callback(env)
 
