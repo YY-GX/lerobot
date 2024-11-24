@@ -124,7 +124,8 @@ def rollout(
     policy.reset()
 
     # observation, info = env.reset(seed=seeds)
-    observation, info = env.reset()
+    # yy: i modified this
+    observation= env.reset()
     if render_callback is not None:
         render_callback(env)
 
@@ -160,7 +161,9 @@ def rollout(
         assert action.ndim == 2, "Action dimensions should be (batch, action_dim)"
 
         # Apply the next action.
-        observation, reward, terminated, truncated, info = env.step(action)
+        # observation, reward, terminated, truncated, info = env.step(action)
+        # yy: i modified this
+        observation, reward, terminated, info = env.step(action)
         if render_callback is not None:
             render_callback(env)
 
@@ -172,7 +175,9 @@ def rollout(
             successes = [False] * env.num_envs
 
         # Keep track of which environments are done so far.
-        done = terminated | truncated | done
+        # done = terminated | truncated | done
+        # yy: i modified this
+        done = terminated | done
 
         all_actions.append(torch.from_numpy(action))
         all_rewards.append(torch.from_numpy(reward))
