@@ -63,7 +63,7 @@ from torch import Tensor, nn
 from tqdm import trange
 
 from lerobot.common.datasets.factory import make_dataset
-from lerobot.common.envs.factory import make_env, make_libero_env
+from lerobot.common.envs.factory import make_env #, make_libero_env
 from lerobot.common.envs.utils import preprocess_observation
 from lerobot.common.logger import log_output_dir
 from lerobot.common.policies.factory import make_policy

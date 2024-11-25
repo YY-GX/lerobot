@@ -1,16 +1,16 @@
 # @package _global_
 
-seed: 1000
+seed: 10000
 dataset_repo_id: lerobot/aloha_sim_insertion_human
 
-override_dataset_stats:
-  observation.images.top:
-    # stats from imagenet, since we use a pretrained vision model
-    mean: [[[0.485]], [[0.456]], [[0.406]]]  # (c,1,1)
-    std: [[[0.229]], [[0.224]], [[0.225]]]  # (c,1,1)
+#override_dataset_stats:
+#  observation.images.top:
+#    # stats from imagenet, since we use a pretrained vision model
+#    mean: [[[0.485]], [[0.456]], [[0.406]]]  # (c,1,1)
+#    std: [[[0.229]], [[0.224]], [[0.225]]]  # (c,1,1)
 
 training:
-  offline_steps: 100000
+  offline_steps: 100000 # 100000
   online_steps: 0
   eval_freq: 20000
   save_freq: 20000
@@ -41,14 +41,18 @@ policy:
 
   input_shapes:
     # TODO(rcadene, alexander-soare): add variables for height and width from the dataset/env?
-    observation.images.top: [3, 480, 640]
-    observation.state: ["${env.state_dim}"]
+#    observation.images.top: [3, 480, 640]
+#    observation.state: ["${env.state_dim}"]
+    observation.images.image: [ 3, 128, 128 ]
+    observation.state: [ 9 ]
   output_shapes:
-    action: ["${env.action_dim}"]
+#    action: ["${env.action_dim}"]
+    action: [7]
 
   # Normalization / Unnormalization
   input_normalization_modes:
-    observation.images.top: mean_std
+#    observation.images.top: mean_std
+    observation.images.image: mean_std
     observation.state: mean_std
   output_normalization_modes:
     action: mean_std
