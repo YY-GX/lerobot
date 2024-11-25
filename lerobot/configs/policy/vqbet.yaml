@@ -22,7 +22,7 @@ dataset_repo_id: lerobot/pusht
 training:
   offline_steps: 250000  # 250000
   online_steps: 0
-  eval_freq: 25000
+  eval_freq: -25000
   save_freq: 25000
   save_checkpoint: true
 
