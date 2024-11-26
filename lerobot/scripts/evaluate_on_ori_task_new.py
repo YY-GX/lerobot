@@ -85,7 +85,7 @@ def observation_to_desired_shape(observation):
     # Extract image observation and ensure desired shape
     agentview_rgb = observation['obs']["agentview_rgb"]  # Shape [20, 3, 128, 128]
 
-    numpy_array = agentview_rgb[0].numpy()
+    numpy_array = agentview_rgb[0].cpu().numpy()
     np.save('agentview_rgb_0.npy', numpy_array)
     img = agentview_rgb[0].permute(1, 2, 0).cpu().numpy()  # Convert from [C, H, W] to [H, W, C]
     img = (img * 255).astype(np.uint8)  # Scale to 0-255
