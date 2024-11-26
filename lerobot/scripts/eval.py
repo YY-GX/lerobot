@@ -125,7 +125,7 @@ def rollout(
 
     # observation, info = env.reset(seed=seeds)
     # yy: i modified this
-    observation= env.reset()
+    observation = env.reset()
     if render_callback is not None:
         render_callback(env)
 
@@ -485,8 +485,8 @@ def main(
     log_output_dir(out_dir)
 
     logging.info("Making environment.")
-    # env = make_env(hydra_cfg)
-    env = make_libero_env(hydra_cfg, task_suite_name="libero_90", task_id=4, resolution=128, n_envs=20)
+    env = make_env(hydra_cfg)
+    # env = make_libero_env(hydra_cfg, task_suite_name="libero_90", task_id=4, resolution=128, n_envs=20)
 
     logging.info("Making policy.")
     if hydra_cfg_path is None:
