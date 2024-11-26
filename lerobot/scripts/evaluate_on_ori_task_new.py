@@ -90,6 +90,7 @@ def observation_to_desired_shape(observation):
     img = agentview_rgb[0].permute(1, 2, 0).cpu().numpy()  # Convert from [C, H, W] to [H, W, C]
     img = (img * 255).astype(np.uint8)  # Scale to 0-255
     Image.fromarray(img).save('agentview_0.png')
+    exit(0)
 
     agentview_rgb = agentview_rgb.flip(-1).flip(-2)
 
