@@ -112,7 +112,7 @@ algo_map = {
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Evaluation Script")
-    parser.add_argument("--model_path_folder", type=str, default="/mnt/arc/yygx/pkgs_baselines/LIBERO/libero/experiments/libero_90/training_eval_skills_original_env/Sequential/BCRNNPolicy_seed10000/all/")
+    parser.add_argument("--model_path_folder", type=str, default="/mnt/arc/yygx/pkgs_baselines/LIBERO/libero/experiments/libero_90/skill_policies_without_wrist_camera_view/Sequential/BCTransformerPolicy_seed10000/all")
     parser.add_argument("--pretrained_policy_path", type=str,
                         default="/mnt/arc/yygx/pkgs_baselines/lerobot/outputs/train/2024-11-21/16-45-45_pusht_diffusion_default/checkpoints/005000/pretrained_model")
     parser.add_argument(
