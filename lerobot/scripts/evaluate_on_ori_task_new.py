@@ -84,6 +84,7 @@ def observation_to_desired_shape(observation):
 
     # Extract image observation and ensure desired shape
     agentview_rgb = observation['obs']["agentview_rgb"]  # Shape [20, 3, 128, 128]
+    agentview_rgb = agentview_rgb.flip(-1).flip(-2)
 
     numpy_array = agentview_rgb[0].cpu().numpy()
     np.save('agentview_rgb_0.npy', numpy_array)
@@ -91,8 +92,6 @@ def observation_to_desired_shape(observation):
     img = (img * 255).astype(np.uint8)  # Scale to 0-255
     Image.fromarray(img).save('agentview_0.png')
     exit(0)
-
-    agentview_rgb = agentview_rgb.flip(-1).flip(-2)
 
     # Set the stacked tensors to the desired_observation dictionary
     desired_observation['observation.state'] = state
@@ -258,7 +257,6 @@ def main():
                     # prev_observation = copy.deepcopy(data)
                     with torch.inference_mode():
                         actions = policy.select_action(data)
-                    #     TODO: type of action has some issues here
                     actions = actions.cpu().tolist()
                     obs, reward, done, info = env.step(actions)
                     video_writer_agentview.append_vector_obs(
