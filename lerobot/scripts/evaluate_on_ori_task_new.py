@@ -83,6 +83,7 @@ def observation_to_desired_shape(observation):
 
     # Extract image observation and ensure desired shape
     agentview_rgb = observation['obs']["agentview_rgb"]  # Shape [20, 3, 128, 128]
+    agentview_rgb = agentview_rgb.flip(-1).flip(-2)
 
     # Set the stacked tensors to the desired_observation dictionary
     desired_observation['observation.state'] = state
@@ -179,7 +180,6 @@ def main():
         benchmark.set_task_embs(task_embs)
         task = benchmark.get_task(task_idx)
 
-        print("debug 0")
     
         """
         Start Evaluation
@@ -199,7 +199,6 @@ def main():
 
         os.system(f"mkdir -p {video_folder}")
 
-        print("debug 1")
 
         with Timer() as t:
             video_writer_agentview = VideoWriter(os.path.join(video_folder, "agentview"), save_video=True,
@@ -214,8 +213,7 @@ def main():
                 "camera_heights": cfg.data.img_h,
                 "camera_widths": cfg.data.img_w,
             }
-            print("debug 2")
-    
+
             env_num = cfg['eval']['n_eval']
             env = SubprocVectorEnv(
                 [lambda: OffScreenRenderEnv(**env_args) for _ in range(env_num)]
@@ -225,19 +223,14 @@ def main():
             init_states_path = os.path.join(
                 cfg.init_states_folder, task.problem_folder, task.init_states_file
             )
-            print("debug 2.1")
             init_states = torch.load(init_states_path)
-            print("debug 2.2")
             indices = np.arange(env_num) % init_states.shape[0]
-            print("debug 2.3")
             init_states_ = init_states[indices]
-            print("debug 3")
     
             dones = [False] * env_num
             steps = 0
             obs = env.set_init_state(init_states_)
             task_emb = benchmark.get_task_emb(task_idx)
-            print("debug 4")
     
             num_success = 0
             for _ in range(5):  # simulate the physics without any actions
@@ -253,7 +246,6 @@ def main():
                     # TODO
                     # data = observation_to_desired_shape(data, prev_observation=prev_observation, n_obs_steps=cfg_diffusion.policy.n_obs_steps)
                     data = observation_to_desired_shape(data)
-                    print(data['observation.images.image'].size())
                     # prev_observation = copy.deepcopy(data)
                     with torch.inference_mode():
                         actions = policy.select_action(data)
