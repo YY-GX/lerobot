@@ -36,6 +36,9 @@ from lerobot.common.utils.utils import init_hydra_config
 from lerobot.common.policies.factory import make_policy
 from pathlib import Path
 from PIL import Image
+import torch
+from PIL import Image
+import torchvision.transforms as T
 
 def load_policy(pretrained_policy_path):
     pretrained_policy_path = Path(pretrained_policy_path)
@@ -47,31 +50,6 @@ def load_policy(pretrained_policy_path):
     return policy, cfg
 
 
-# def observation_to_desired_shape(observation, prev_observation=None, n_obs_steps=2):
-#     desired_observation = {}
-#
-#     # Extract gripper and joint states and concatenate them
-#     gripper_states = observation['obs']['gripper_states']
-#     joint_states = observation['obs']['joint_states']
-#     state = torch.cat((gripper_states, joint_states), dim=1)  # Shape [20, 9]
-#
-#     # Extract image observation and ensure desired shape
-#     agentview_rgb = observation['obs']["agentview_rgb"]  # Shape [20, 3, 128, 128]
-#
-#     if prev_observation is None:
-#         # For the first timestep, add an extra dimension and duplicate the observation
-#         stacked_state = state.unsqueeze(1).expand(-1, n_obs_steps, -1)  # Shape [20, 2, 9]
-#         stacked_image = agentview_rgb.unsqueeze(1).expand(-1, n_obs_steps, -1, -1, -1)  # Shape [20, 2, 3, 256, 256]
-#     else:
-#         # Otherwise, stack the current and previous observations
-#         stacked_state = torch.cat((prev_observation['observation.state'], state.unsqueeze(1)), dim=1)  # Shape [20, 2, 9]
-#         stacked_image = torch.cat((prev_observation['observation.images.image'], agentview_rgb.unsqueeze(1)), dim=1)  # Shape [20, 2, 3, 256, 256]
-#
-#     # Set the stacked tensors to the desired_observation dictionary
-#     desired_observation['observation.state'] = stacked_state
-#     desired_observation['observation.images.image'] = stacked_image
-#
-#     return desired_observation
 
 
 def observation_to_desired_shape(observation):
@@ -161,7 +139,7 @@ def main():
             print(f">> Env_{task_id} evaluation fails.")
             continue
         # TODO
-        _, cfg, previous_mask = torch_load_model(
+        _, cfg, _ = torch_load_model(
             model_path, map_location=args.device_id
         )
 
@@ -246,6 +224,12 @@ def main():
 
             prev_observation = None
 
+            debug_cnt = 0
+            debug_cnt_upper_bound = 10
+            debug_img_ls = []
+            debug_state_ls = []
+            debug_action_ls = []
+
             with torch.no_grad():
                 while steps < cfg.eval.max_steps:
                     print(f">> step: {steps}")
@@ -255,9 +239,48 @@ def main():
                     # data = observation_to_desired_shape(data, prev_observation=prev_observation, n_obs_steps=cfg_diffusion.policy.n_obs_steps)
                     data = observation_to_desired_shape(data)
                     # prev_observation = copy.deepcopy(data)
+
+
                     with torch.inference_mode():
                         actions = policy.select_action(data)
                     actions = actions.cpu().tolist()
+
+
+                    ########## DEBUG ##########
+                    # yy: save 10 steps of obs & action
+                    if debug_cnt >= debug_cnt_upper_bound:
+                        def save_tensor_as_image(tensor, filename):
+                            # Ensure the tensor is in the shape [H, W, C]
+                            if tensor.shape[0] == 3:  # [C, H, W] -> [H, W, C]
+                                tensor = tensor.permute(1, 2, 0)
+                            # Convert to PIL Image
+                            image = T.ToPILImage()(tensor)
+                            # Save the image
+                            image.save(filename)
+
+                        # Save all tensors as images
+                        for i, tensor in enumerate(debug_img_ls):
+                            save_tensor_as_image(tensor.cpu(), f"outputs/debug/image_{i + 1}.png")
+
+                        for i, tensor in enumerate(debug_state_ls):
+                            # Convert tensor to NumPy
+                            numpy_array = tensor.cpu().numpy()
+                            # Save NumPy array to a file
+                            np.save(f"outputs/debug/vector_{i + 1}.npy", numpy_array)
+
+                        np.save(f"outputs/debug/actions.npy", np.array(debug_action_ls))
+                        exit(0)
+
+                    img = data['observation.images.image'][3, :, :, :]  # 3, 128, 128
+                    state = data['observation.state'][3, :]  # 9
+                    debug_img_ls.append(img)
+                    debug_state_ls.append(state)
+                    debug_action_ls.append(actions)
+
+                    debug_cnt += 1
+                    ########## DEBUG ##########
+
+
                     obs, reward, done, info = env.step(actions)
                     video_writer_agentview.append_vector_obs(
                         obs, dones, camera_name="agentview_image"
@@ -277,7 +300,7 @@ def main():
             video_writer_wristcameraview.save(save_video_name="video_wristcameraview")
             success_rate = num_success / env_num
             env.close()
-    
+
             eval_stats = {
                 "loss": test_loss,
                 "success_rate": success_rate,
