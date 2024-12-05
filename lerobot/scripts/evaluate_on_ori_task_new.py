@@ -250,6 +250,7 @@ def main():
                     # yy: save 10 steps of obs & action
                     if debug_cnt >= debug_cnt_upper_bound:
                         def save_tensor_as_image(tensor, filename):
+                            print(tensor.shape)
                             # Ensure the tensor is in the shape [H, W, C]
                             if tensor.shape[0] == 3:  # [C, H, W] -> [H, W, C]
                                 tensor = tensor.permute(1, 2, 0)
