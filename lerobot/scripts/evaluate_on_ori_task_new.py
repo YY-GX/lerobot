@@ -3,6 +3,8 @@ import copy
 import sys
 import os
 
+
+IS_DEBUG = False
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 
@@ -196,8 +198,8 @@ def main():
                 "bddl_file_name": os.path.join(
                     cfg.bddl_folder, task.problem_folder, task.bddl_file
                 ),
-                "camera_heights": cfg.data.img_h,
-                "camera_widths": cfg.data.img_w,
+                "camera_heights": 256,  # cfg.data.img_h,
+                "camera_widths": 256,  # cfg.data.img_w,
             }
 
             env_num = cfg['eval']['n_eval']
@@ -245,45 +247,44 @@ def main():
                         actions = policy.select_action(data)
                     actions = actions.cpu().tolist()
 
+                    if IS_DEBUG:
+                        ########## DEBUG ##########
+                        # yy: save 10 steps of obs & action
+                        if debug_cnt >= debug_cnt_upper_bound:
+                            def save_tensor_as_image(tensor, filename):
+                                # Ensure the tensor is in the shape [H, W, C] for RGB
+                                tensor = tensor.permute(1, 2, 0).cpu().numpy()
 
-                    ########## DEBUG ##########
-                    # yy: save 10 steps of obs & action
-                    if debug_cnt >= debug_cnt_upper_bound:
-                        def save_tensor_as_image(tensor, filename):
-                            # Ensure the tensor is in the shape [H, W, C] for RGB
-                            tensor = tensor.permute(1, 2, 0).cpu().numpy()
+                                # Convert to uint8 (values should be in range [0, 255])
+                                if tensor.dtype != np.uint8:
+                                    tensor = (tensor * 255).clip(0, 255).astype(np.uint8)
 
-                            # Convert to uint8 (values should be in range [0, 255])
-                            if tensor.dtype != np.uint8:
-                                tensor = (tensor * 255).clip(0, 255).astype(np.uint8)
-
-                            # Use PIL to save the NumPy array as an image
-                            image = Image.fromarray(tensor)
-                            image.save(filename)
+                                # Use PIL to save the NumPy array as an image
+                                image = Image.fromarray(tensor)
+                                image.save(filename)
 
 
-                        # Save all tensors as images
-                        for i, tensor in enumerate(debug_img_ls):
-                            save_tensor_as_image(tensor.cpu(), f"outputs/debug/image_{i + 1}.png")
+                            # Save all tensors as images
+                            for i, tensor in enumerate(debug_img_ls):
+                                save_tensor_as_image(tensor.cpu(), f"outputs/debug/image_{i + 1}.png")
 
-                        for i, tensor in enumerate(debug_state_ls):
-                            # Convert tensor to NumPy
-                            numpy_array = tensor.cpu().numpy()
-                            # Save NumPy array to a file
-                            np.save(f"outputs/debug/vector_{i + 1}.npy", numpy_array)
+                            for i, tensor in enumerate(debug_state_ls):
+                                # Convert tensor to NumPy
+                                numpy_array = tensor.cpu().numpy()
+                                # Save NumPy array to a file
+                                np.save(f"outputs/debug/vector_{i + 1}.npy", numpy_array)
 
-                        np.save(f"outputs/debug/actions.npy", np.array(debug_action_ls))
-                        exit(0)
+                            np.save(f"outputs/debug/actions.npy", np.array(debug_action_ls))
+                            exit(0)
 
-                    img = data['observation.images.image'][3, :, :, :]  # 3, 128, 128
-                    state = data['observation.state'][3, :]  # 9
-                    debug_img_ls.append(img)
-                    debug_state_ls.append(state)
-                    debug_action_ls.append(actions)
+                        img = data['observation.images.image'][3, :, :, :]  # 3, 128, 128
+                        state = data['observation.state'][3, :]  # 9
+                        debug_img_ls.append(img)
+                        debug_state_ls.append(state)
+                        debug_action_ls.append(actions)
 
-                    debug_cnt += 1
-                    ########## DEBUG ##########
-
+                        debug_cnt += 1
+                        ########## DEBUG ##########
 
                     obs, reward, done, info = env.step(actions)
                     video_writer_agentview.append_vector_obs(
