@@ -250,8 +250,15 @@ def main():
                     # yy: save 10 steps of obs & action
                     if debug_cnt >= debug_cnt_upper_bound:
                         def save_tensor_as_image(tensor, filename):
-                            print(tensor.permute(1, 2, 0).shape)
-                            image = T.ToPILImage()(tensor.permute(1, 2, 0))
+                            # Ensure the tensor is in the shape [H, W, C] for RGB
+                            tensor = tensor.permute(1, 2, 0).cpu().numpy()
+
+                            # Convert to uint8 (values should be in range [0, 255])
+                            if tensor.dtype != np.uint8:
+                                tensor = (tensor * 255).clip(0, 255).astype(np.uint8)
+
+                            # Use PIL to save the NumPy array as an image
+                            image = Image.fromarray(tensor)
                             image.save(filename)
 
 
